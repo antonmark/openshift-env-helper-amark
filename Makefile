@@ -40,13 +40,13 @@ prepare:
 	echo "Nothing to do"
 
 network:
-	# Define Network 
+	# Define Network
 	pwd
 	wget -P $(WORK_DIR) https://raw.githubusercontent.com/RedHatOfficial/ocp4-helpernode/master/docs/examples/virt-net.xml
 
 	sed -i -e "s@<name>openshift4</name>@<name>$(NETWORK_NAME)</name>@g" $(WORK_DIR)/virt-net.xml
 	sed -i -e "s@<bridge name='openshift4' stp='on' delay='0'/>@<bridge name='$(NETWORK_NAME)' stp='on' delay='0'/>@g" $(WORK_DIR)/virt-net.xml
-	
+
 	virsh net-define --file $(WORK_DIR)/virt-net.xml
 	virsh net-autostart $(VIRSH_NETNAME)
 	virsh net-start $(VIRSH_NETNAME)
@@ -67,7 +67,7 @@ helper_deploy:
 	# Add ssh key to helper-ks.cfg
 	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
 
-	virt-install --name=$(HELPER_NODE) --vcpus=2 --ram=4096 \
+	virt-install --name=$(HELPER_NODE) --vcpus=2 --ram=8192 \
 	--disk path=/var/lib/libvirt/images/$(HELPER_NODE).qcow2,bus=virtio,size=50 \
 	--os-variant rhel8.0 --network network=openshift4,model=virtio \
 	--boot hd,menu=on --location /var/lib/libvirt/ISO/$(HELPER_ISO) \
@@ -75,7 +75,7 @@ helper_deploy:
 	@sleep 5
 
 helper_wait:
-	## Cant exit loop with some reasons.. 
+	## Cant exit loop with some reasons..
 	# Wait until helper node is stopped.
 	./scripts/check_helper_running.sh $(HELPER_NODE)
 
@@ -165,7 +165,7 @@ setup_registry:
 
 attach_additional_network:
 	./scripts/add_additional_network.sh $(PRIVATE_NETWORK_NAME) $(PRIVATE_NETWORK_CIDR)
-	./scripts/attach_additional_interface.sh 
+	./scripts/attach_additional_interface.sh
 
 detach_additional_network:
 	./scripts/detach_additional_interface.sh
@@ -177,7 +177,7 @@ clean:
 	rm -f $(WORK_DIR)/*
 	ssh-keygen -R $(NETWORK_CIDR).77
 
-helper_clean: 
+helper_clean:
 	-virsh destroy $(HELPER_NODE)
 	-virsh undefine $(HELPER_NODE) --remove-all-storage
 
@@ -197,7 +197,6 @@ network_clean:
 	./scripts/remove_network.sh $(WORK_DIR)/virt-net.xml
 
 additional_network_clean:
-	./scripts/remove_additional_network.sh 
+	./scripts/remove_additional_network.sh
 
 flclean: odf_clean worker_clean master_clean bootstrap_clean helper_clean additional_network_clean network_clean clean
-
