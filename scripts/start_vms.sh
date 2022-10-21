@@ -5,17 +5,32 @@ fi
 
 WORKER_NUM=$(expr ${1} - 1)
 
-for i in bootstrap master{0..2}
+for i in bootstrap
+do
+  virsh start ocp4-${i}
+  echo "Sleeping for 2 minutes..."
+  sleep 120
+done
+
+for i in master{0..2}
 do
   virsh start ocp4-${i}
   sleep 5
 done
+
+echo "Sleeping for 2 minutes..."
+sleep 120
 
 for i in $(seq 0 ${WORKER_NUM})
 do
   virsh start ocp4-worker${i}
   sleep 5
 done
+
+if [ ${WORKER_NUM} == "true" ]; then
+  echo "Sleeping for 2 minutes..."
+  sleep 120
+fi
 
 if [ ${INSTALL_ODF} != "true" ]; then
   exit 0
@@ -26,4 +41,3 @@ do
   virsh start ocp4-${i}
   sleep 5
 done
-
