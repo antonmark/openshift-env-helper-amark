@@ -68,7 +68,7 @@ helper_deploy:
 	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
 
 	virt-install --name=$(HELPER_NODE) --vcpus=2 --ram=8192 \
-	--disk path=/var/lib/libvirt/images/$(HELPER_NODE).qcow2,bus=virtio,size=50 \
+	--disk path=/home/$(HELPER_NODE).qcow2,bus=virtio,size=50 \
 	--os-variant rhel8.0 --network network=openshift4,model=virtio \
 	--boot hd,menu=on --location /var/lib/libvirt/ISO/$(HELPER_ISO) \
 	--initrd-inject $(WORK_DIR)/helper-ks.cfg --extra-args "inst.ks=file:/helper-ks.cfg" --graphics vnc,listen=0.0.0.0 --noautoconsole
