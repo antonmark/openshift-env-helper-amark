@@ -5,7 +5,7 @@ if [ ${INSTALL_ODF} != "true" ]; then
  exit 0
 fi
 
-WORK_DIR=../ocp4-workingdir
+WORK_DIR=./ocp4-workingdir
 
 for i in odf{0..2}
 do

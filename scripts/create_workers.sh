@@ -1,9 +1,9 @@
 #!/bin/bash
-# TODO use variable for network name 
+# TODO use variable for network name
 
 WORKER_NUM=$(expr ${1} - 1)
 
-WORK_DIR=../ocp4-workingdir
+WORK_DIR=./ocp4-workingdir
 
 for i in $(seq 0 ${WORKER_NUM})
 do

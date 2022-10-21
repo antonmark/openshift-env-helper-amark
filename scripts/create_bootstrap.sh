@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORK_DIR=../ocp4-workingdir
+WORK_DIR=./ocp4-workingdir
 
 for i in  bootstrap
 do
