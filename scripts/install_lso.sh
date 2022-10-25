@@ -67,9 +67,9 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - odf0.ocp4.example.com
-          - odf1.ocp4.example.com
-          - odf2.ocp4.example.com
+          - odf0.ocp4.cluster.lab
+          - odf1.ocp4.cluster.lab
+          - odf2.ocp4.cluster.lab
   storageClassDevices:
     - storageClassName: "localblock"
       volumeMode: Block

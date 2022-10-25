@@ -1,12 +1,12 @@
 #!/bin/bash
-set -x 
+set -x
 
 mkdir ~/ocp4
 cd ~/ocp4
 
 cat <<EOF > install-config.yaml
 apiVersion: v1
-baseDomain: example.com
+baseDomain: cluster.lab
 compute:
 - hyperthreading: Enabled
   name: worker
@@ -41,4 +41,3 @@ openshift-install create ignition-configs
 cp ~/ocp4/*.ign /var/www/html/ignition/
 restorecon -vR /var/www/html/
 chmod o+r /var/www/html/ignition/*.ign
-

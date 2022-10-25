@@ -14,7 +14,7 @@ helper:
   name: "helper"
   ipaddr: "${NETWORK_CIDR}.77"
 dns:
-  domain: "example.com"
+  domain: "cluster.lab"
   clusterid: "ocp4"
   forwarder1: "${NETWORK_CIDR}.1"
   forwarder2: "${NETWORK_CIDR}.1"

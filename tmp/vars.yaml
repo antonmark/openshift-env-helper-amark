@@ -5,7 +5,7 @@ helper:
   name: "helper"
   ipaddr: ".77"
 dns:
-  domain: "example.com"
+  domain: "cluster.lab"
   clusterid: "ocp4"
   forwarder1: ".1"
   forwarder2: ".1"
