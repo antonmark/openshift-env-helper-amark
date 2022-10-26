@@ -4,7 +4,7 @@ WORK_DIR=./ocp4-workingdir
 
 for i in  bootstrap
 do
-  virt-install --name="ocp4-${i}" --vcpus=4 --ram=16384 \
+  virt-install --name="ocp4-${i}" --vcpus=6 --ram=32768 \
   --disk path=/home/ocp4-${i}.qcow2,bus=virtio,size=120 \
   --os-variant rhel8.0 --network network=${NETWORK_NAME},model=virtio \
   --graphics vnc,port=-1,listen=0.0.0.0 --check disk_size=off \
