@@ -6,23 +6,23 @@ fi
 WORKER_NUM=${1}
 ODF_NUM=${2}
 
-TMPFILE=$(mktemp /tmp/csr-XXXXX)
-
-NUM=0
-CSR_NUM=$(expr "$WORKER_NUM" \* 2)
-if [ "${INSTALL_ODF}" == "true" ]; then
-  CSR_NUM=$(expr $CSR_NUM + $ODF_NUM \* 2)
-fi
-
+NODE_NUM=$(expr $WORKER_NUM + $ODF_NUM)
 TOTAL_WAIT=0
-while [ $NUM -lt $CSR_NUM ] || [ $TOTAL_WAIT < 1200 ];
-do
-  oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve >> $TMPFILE 2> /dev/null
-  echo -n "."
+NUM=0
 
-  sleep 5
-  NUM=$(grep -i approved $TMPFILE | wc -l)
+while [ $NUM -lt $NODE_NUM ] || [ $TOTAL_WAIT < 1200 ];
+do
+  NUM=$(oc get nodes|grep Ready|wc -l)
   TOTAL_WAIT=$(expr $TOTAL_WAIT + 5)
+  sleep 5
 done
 
-rm -f $TMPFILE
+if [ $NUM -qe $NODE_NUM ];
+then
+  oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+  sleep 5
+  # just in case of an API issue
+  oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+fi
+  echo "Warning: Some nodes are not ready or have not joined the cluster."
+  exit 1
