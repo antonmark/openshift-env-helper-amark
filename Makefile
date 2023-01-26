@@ -33,7 +33,7 @@ deploy_ocp: prepare network helper ocp
 helper: helper_deploy helper_wait helper_start
 ocp: ocp_prepare ocp_install
 ocp_prepare: masters bootstrap workers odfs setup_helper generate_vars copy_vars run_playbook copy_pullsecret copy_install_script
-ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap approve_csrs wait_install_complete
+ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap wait_install_complete approve_csrs
 ocs_install: install_lso install_ocs
 
 prepare:
