@@ -15,7 +15,7 @@ done
 for i in master{0..2}
 do
   virsh start ocp4-${i}
-  sleep 5
+  sleep 10
 done
 
 echo "Sleeping for 2 minutes..."
@@ -24,7 +24,7 @@ sleep 120
 for i in $(seq 0 ${WORKER_NUM})
 do
   virsh start ocp4-worker${i}
-  sleep 5
+  sleep 10
 done
 
 if [ ${WORKER_NUM} == "true" ]; then
@@ -39,5 +39,5 @@ fi
 for i in odf{0..2}
 do
   virsh start ocp4-${i}
-  sleep 5
+  sleep 10
 done
