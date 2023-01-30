@@ -33,7 +33,7 @@ deploy_ocp: prepare network helper ocp
 helper: helper_deploy helper_wait helper_start
 ocp: ocp_prepare ocp_install
 ocp_prepare: masters bootstrap workers odfs setup_helper generate_vars copy_vars run_playbook copy_pullsecret copy_install_script
-ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap wait_install_complete approve_csrs
+ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap wait_install_complete approve_csrs reverse_proxy
 ocs_install: install_lso install_ocs
 
 prepare:
@@ -144,6 +144,9 @@ approve_csrs:
 	scp -o "StrictHostKeyChecking=no" ./scripts/approve_csrs.sh root@$(HELPER_IP):~/
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) chmod +x approve_csrs.sh
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) INSTALL_ODF=$(INSTALL_ODF) ./approve_csrs.sh $(WORKER_NUM) $(ODF_NUM)"
+
+reverse_proxy:
+	./scripts/reverse_proxy.sh
 
 wait_install_complete:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) openshift-install wait-for install-complete --dir ./ocp4
