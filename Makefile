@@ -25,15 +25,12 @@ SSH_PUB_BASTION = $(HOME_DIR)/.ssh/id_rsa.pub
 
 LIBVIRT_ISO_DIR = /var/lib/libvirt/ISO/
 
-RHSM_USERNAME = MYNAME
-RHSM_PASSWORD = MYPASSWD
-
 all: deploy_ocp install_lso install_ocs
 deploy_ocp: prepare network helper ocp
 helper: helper_deploy helper_wait helper_start
 ocp: ocp_prepare ocp_install
 ocp_prepare: masters bootstrap workers odfs setup_helper generate_vars copy_vars run_playbook copy_pullsecret copy_install_script
-ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap wait_install_complete approve_csrs reverse_proxy
+ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap wait_install_complete approve_csrs reverse_proxy chrony_config
 ocs_install: install_lso install_ocs
 
 prepare:
@@ -62,7 +59,7 @@ helper_deploy:
 	sed -i -e "s/192.168.7.77/$(HELPER_IP)/g" $(WORK_DIR)/helper-ks.cfg
 	sed -i -e "s/192.168.7.1/$(NETWORK_CIDR).1/g" $(WORK_DIR)/helper-ks.cfg
 
-	./scripts/add-rhsm-to-ks.sh $(WORK_DIR) $(RHSM_USERNAME) $(RHSM_PASSWORD)
+	./scripts/add-rhsm-to-ks.sh $(WORK_DIR)
 
 	# Add ssh key to helper-ks.cfg
 	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
@@ -147,6 +144,11 @@ approve_csrs:
 
 reverse_proxy:
 	./scripts/reverse_proxy.sh
+
+chrony_config:
+	scp -o "StrictHostKeyChecking=no" ./scripts/chrony_config.sh root@$(HELPER_IP):~/
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) chmod +x chrony_config.sh
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) ./chrony_config.sh"
 
 wait_install_complete:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) openshift-install wait-for install-complete --dir ./ocp4
