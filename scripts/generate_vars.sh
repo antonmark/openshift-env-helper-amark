@@ -2,6 +2,7 @@
 
 BASEDIR=$(dirname $0)
 OCP_VERSION=$2
+NUM_WORKERS=$3
 
 export BOOTSTRAP_MAC=$(${BASEDIR}/get_macaddress.sh ocp4-bootstrap)
 
@@ -10,8 +11,15 @@ do
   eval export MASTER${i}_MAC=$(${BASEDIR}/get_macaddress.sh ocp4-master${i})
 done
 
-## TODO use WORKER_NUM environment variable
-for i in {0..1}
+if [ $NUM_WORKERS -gt 0 ]; then
+  NUM=$(expr $NUM_WORKERS - 1)
+  for i in $(seq 0 $NUM)
+  do
+    eval export WORKER${i}_MAC=$(${BASEDIR}/get_macaddress.sh ocp4-worker${i})
+  done
+fi
+
+for i in $(seq 0 $NUM)
 do
   eval export WORKER${i}_MAC=$(${BASEDIR}/get_macaddress.sh ocp4-worker${i})
 done
