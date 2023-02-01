@@ -106,7 +106,7 @@ setup_helper:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "cat /tmp/bashrc >> ~/.bashrc"
 
 generate_vars:
-	./scripts/generate_vars.sh $(WORK_DIR) $(OCP_VERSION)
+	./scripts/generate_vars.sh $(WORK_DIR) $(OCP_VERSION) $(WORKER_NUM)
 
 copy_vars:
 	scp -o "StrictHostKeyChecking=no" $(WORK_DIR)/vars.yaml root@$(HELPER_IP):~/ocp4-helpernode/
