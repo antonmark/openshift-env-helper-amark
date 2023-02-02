@@ -14,7 +14,7 @@ while [ $NUM_CSR -gt 0 ];
 do
   echo "$NUM_CSR pending CSR's. Approving..."
   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
-  echo "Waiting for 30 seconds."
+  echo "Waiting for 10 seconds."
   sleep 10
   NUM_CSR=$(oc get csr|grep -i pending|wc -l)
 done
