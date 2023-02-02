@@ -12,26 +12,31 @@ NUM_CSR=$(oc get csr|grep -i pending|wc -l)
 
 while [ $NUM_CSR -gt 0 ];
 do
-  NUM_CSR=$(oc get csr|grep -i pending|wc -l)
   echo "$NUM_CSR pending CSR's. Approving..."
   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
   echo "Waiting for 30 seconds."
   sleep 10
+  NUM_CSR=$(oc get csr|grep -i pending|wc -l)
 done
 
-echo "All CSR's approved or none waiting. Waiting 30 seconds "
+echo "All CSR's approved or none waiting."
 
 CURRENT_NUM_NODES=$(oc get nodes|grep -v NAME|wc -l)
 
 if [ $CURRENT_NUM_NODES -ne $EXPECTED_NUM_NODES ];
 then
-  echo -n "Waiting 2 minutes for remaining nodes to join.."
+  echo "Waiting 2 minutes for remaining nodes to join.."
   while [ $CURRENT_NUM_NODES -ne $EXPECTED_NUM_NODES ] || [ $TOTAL_WAIT -lt 120 ];
   do
     CURRENT_NUM_NODES=$(oc get nodes|grep -v NAME|wc -l)
     TOTAL_WAIT=$(expr $TOTAL_WAIT + 5)
     sleep 5
-    echo -n "."
+    NUM_CSR=$(oc get csr|grep -i pending|wc -l)
+    if [ $NUM_CSR -gt 0 ]; then
+      echo "$NUM_CSR pending CSR's. Approving..."
+      oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+      NUM_CSR=$(oc get csr|grep -i pending|wc -l)
+    fi
   done
 fi
   echo "All nodes have joined (Current: $CURRENT_NUM_NODES / Expected: $EXPECTED_NUM_NODES). Approving remaining CSR's."
