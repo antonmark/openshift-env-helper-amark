@@ -8,6 +8,7 @@ ODF_NUM=${2}
 
 EXPECTED_NUM_NODES=$(expr $WORKER_NUM + $ODF_NUM + 3)
 TOTAL_WAIT=0
+NUM_CSR=$(oc get csr|grep -i pending|wc -l)
 
 while [ $NUM_CSR -gt 0 ];
 do
@@ -18,7 +19,7 @@ do
   sleep 10
 done
 
-echo "All CSR's approved. Waiting 30 seconds "
+echo "All CSR's approved or none waiting. Waiting 30 seconds "
 
 CURRENT_NUM_NODES=$(oc get nodes|grep -v NAME|wc -l)
 
