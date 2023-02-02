@@ -16,7 +16,7 @@ do
   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
   echo "Waiting for 30 seconds."
   sleep 10
-fi
+done
 
 echo "All CSR's approved. Waiting 30 seconds "
 
