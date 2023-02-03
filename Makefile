@@ -1,7 +1,12 @@
 export DEBUG = false
 WORKER_NUM = 2
 export INSTALL_ODF = false
+export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
 OCP_VERSION=''
+
+# If RHN_PROMPT is set to false populate the following varibles appropriately
+RHN_USERNAME = USERNAME
+RHN_PASSWORD = PASSWORD
 
 ODF_NUM = 3
 
@@ -59,7 +64,7 @@ helper_deploy:
 	sed -i -e "s/192.168.7.77/$(HELPER_IP)/g" $(WORK_DIR)/helper-ks.cfg
 	sed -i -e "s/192.168.7.1/$(NETWORK_CIDR).1/g" $(WORK_DIR)/helper-ks.cfg
 
-	./scripts/add-rhsm-to-ks.sh $(WORK_DIR)
+	./scripts/add-rhsm-to-ks.sh $(WORK_DIR) $(RHN_USERNAME) $(RHN_PASSWORD)
 
 	# Add ssh key to helper-ks.cfg
 	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
