@@ -1,12 +1,15 @@
+#!/bin/bash
+if [ "$DEBUG" != "false" ]; then
+  set -x
+fi
 
-
-
-if [[ "$RHN_PROMPT" == "true"  ]]; then
+if [ "$RHN_PROMPT" != "false" ]; then
   read -p "RHN Username: " USERNAME
   read -s -p "Password: " PASSWORD
+else
+  USERNAME=$2
+  PASSWORD=$3
 fi
-  USERNAME=$1
-  PASSWORD=$2
 
 cat << EOF >>  ${WORK_DIR}/helper-ks.cfg
 %post --log=/root/registration_results.out
