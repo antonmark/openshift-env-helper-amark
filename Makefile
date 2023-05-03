@@ -16,8 +16,8 @@ export WORK_DIR = $(MAKE_HOME)/ocp4-workingdir
 HOME_DIR = $$HOME
 
 export NETWORK_NAME = openshift4
-export CLUSTER_NAME = "ocp4" # This changes the ClusterID. E.g. api.<clusterid>.cluster.lab
-export CLUSTER_DOMAIN = "cluster.lab" # This changes the cluster domain used with ClusterID
+export CLUSTER_NAME = ocp4 # This changes the ClusterID. E.g. api.<clusterid>.cluster.lab
+export CLUSTER_DOMAIN = cluster.lab # This changes the cluster domain used with ClusterID
 VIRSH_NETNAME = $(NETWORK_NAME)
 export NETWORK_CIDR = 192.168.7
 PRIVATE_NETWORK_NAME = ocp4-private
