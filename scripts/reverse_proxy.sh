@@ -74,5 +74,7 @@ cat << 'EOF' > /etc/traefik/conf.d/exp-ocp.toml
   address = "192.168.7.77:443"
 EOF
 
+sed -i "s/ocp4.cluster.lab/${CLUSTER_NAME}.${CLUSTER_DOMAIN}/g" /etc/traefik/conf.d/exp-ocp.toml
+
 systemctl daemon-reload
 systemctl start traefik.service
