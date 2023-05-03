@@ -1,11 +1,9 @@
-
 WORK_DIR=$1
-
 export VER=""
+
 if [ -e "versions/main-$2.yml" ]; then
   VER=$(cat versions/main-$2.yml)
 fi
-
 
 cat <<EOF > ${WORK_DIR}/vars.yaml
 ---
@@ -15,8 +13,8 @@ helper:
   name: "helper"
   ipaddr: "${NETWORK_CIDR}.77"
 dns:
-  domain: "cluster.lab"
-  clusterid: "ocp4"
+  domain: "${CLUSTER_DOMAIN}"
+  clusterid: "${CLUSTER_NAME}"
   forwarder1: "${NETWORK_CIDR}.1"
   forwarder2: "${NETWORK_CIDR}.1"
 dhcp:

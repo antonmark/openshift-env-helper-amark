@@ -6,7 +6,7 @@ cd ~/ocp4
 
 cat <<EOF > install-config.yaml
 apiVersion: v1
-baseDomain: cluster.lab
+baseDomain: ${CLUSTER_DOMAIN}
 compute:
 - hyperthreading: Enabled
   name: worker
@@ -16,7 +16,7 @@ controlPlane:
   name: master
   replicas: 3
 metadata:
-  name: ocp4
+  name: ${CLUSTER_NAME}
 networking:
   clusterNetworks:
   - cidr: 10.254.0.0/16

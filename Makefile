@@ -16,6 +16,8 @@ export WORK_DIR = $(MAKE_HOME)/ocp4-workingdir
 HOME_DIR = $$HOME
 
 export NETWORK_NAME = openshift4
+export CLUSTER_NAME = "ocp4" # This changes the ClusterID. E.g. api.<clusterid>.cluster.lab
+export CLUSTER_DOMAIN = "cluster.lab" # This changes the cluster domain used with ClusterID
 VIRSH_NETNAME = $(NETWORK_NAME)
 export NETWORK_CIDR = 192.168.7
 PRIVATE_NETWORK_NAME = ocp4-private
@@ -129,7 +131,7 @@ copy_install_script:
 
 run_install:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "oc completion bash > /etc/bash_completion.d/oc_bash_completion"
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "NETWORK_CIDR=$(NETWORK_CIDR)  ./install.sh"
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "NETWORK_CIDR=$(NETWORK_CIDR) CLUSTER_DOMAIN=${CLUSTER_DOMAIN} CLUSTER_NAME=${${CLUSTER_NAME}} ./install.sh"
 
 start_vms:
 	./scripts/start_vms.sh $(WORKER_NUM)
