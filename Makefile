@@ -135,7 +135,7 @@ copy_install_script:
 
 run_install:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "oc completion bash > /etc/bash_completion.d/oc_bash_completion"
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "NETWORK_CIDR=$(NETWORK_CIDR) CLUSTER_DOMAIN=${CLUSTER_DOMAIN} CLUSTER_NAME=${${CLUSTER_NAME}} ./install.sh"
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "NETWORK_CIDR=$(NETWORK_CIDR) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install.sh"
 
 start_vms:
 	./scripts/start_vms.sh $(WORKER_NUM)
@@ -167,7 +167,7 @@ wait_install_complete:
 install_lso:
 	scp -o "StrictHostKeyChecking=no" ./scripts/install_lso.sh root@$(HELPER_IP):~/
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) chmod +x install_lso.sh
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) INSTALL_ODF=$(INSTALL_ODF) ./install_lso.sh"
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) INSTALL_ODF=$(INSTALL_ODF) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install_lso.sh"
 
 install_ocs:
 	scp -o "StrictHostKeyChecking=no" ./scripts/install_odf.sh root@$(HELPER_IP):~/

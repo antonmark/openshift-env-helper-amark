@@ -43,9 +43,9 @@ EOF
 
 echo "Wait for install succeeded."
 RTN=1
-while [ $RTN -ne 0 ]; 
+while [ $RTN -ne 0 ];
 do
-  oc get csvs -n openshift-local-storage | grep Succeeded > /dev/null 
+  oc get csvs -n openshift-local-storage | grep Succeeded > /dev/null
   RTN=$?
   if [ $RTN -ne 0 ]; then
     echo -n "."
@@ -67,9 +67,9 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - odf0.ocp4.cluster.lab
-          - odf1.ocp4.cluster.lab
-          - odf2.ocp4.cluster.lab
+          - odf0.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+          - odf1.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+          - odf2.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
   storageClassDevices:
     - storageClassName: "localblock"
       volumeMode: Block
@@ -83,9 +83,8 @@ EOF
 
 
 NUM=0
-while [ $NUM -lt 3 ]; 
+while [ $NUM -lt 3 ];
 do
   NUM=$(oc get pv | grep localblock | wc -l)
   sleep 5
 done
-
