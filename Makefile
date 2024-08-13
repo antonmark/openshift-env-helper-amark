@@ -2,7 +2,7 @@ export DEBUG = false
 WORKER_NUM = 2
 export INSTALL_ODF = false
 export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
-OCP_VERSION=''
+OCP_VERSION='4.14'
 
 # If RHN_PROMPT is set to false populate the following varibles appropriately
 RHN_USERNAME = USERNAME
@@ -18,9 +18,9 @@ HOME_DIR = $$HOME
 export NETWORK_NAME = openshift4
 
 # This changes the ClusterID. E.g. api.<clusterid>.cluster.lab
-export CLUSTER_NAME = ocp4
+export CLUSTER_NAME = libvirt2
 # This changes the cluster domain used with ClusterID
-export CLUSTER_DOMAIN = cluster.lab
+export CLUSTER_DOMAIN = ocpcluster.cc
 
 VIRSH_NETNAME = $(NETWORK_NAME)
 export NETWORK_CIDR = 192.168.7
@@ -107,7 +107,7 @@ odfs:
 	./scripts/create_odf.sh
 
 setup_helper:
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) dnf -y install ansible-core git
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) dnf -y install ansible-core git python3-libsemanage
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) ansible-galaxy collection install community.crypto
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) ansible-galaxy collection install ansible.posix
 

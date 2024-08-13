@@ -21,7 +21,7 @@ networking:
   clusterNetworks:
   - cidr: 10.254.0.0/16
     hostPrefix: 24
-  networkType: OpenShiftSDN
+  networkType: OVNKubernetes
   serviceNetwork:
   - 172.30.0.0/16
   machineCIDR: ${NETWORK_CIDR}.0/24

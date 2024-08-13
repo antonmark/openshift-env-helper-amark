@@ -1,0 +1,5 @@
+ocp_bios: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.15/latest/rhcos-live-rootfs.x86_64.img"
+ocp_initramfs: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.15/latest/rhcos-live-initramfs.x86_64.img"
+ocp_install_kernel: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.15/latest/rhcos-live-kernel-x86_64"
+ocp_client: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.15/openshift-client-linux.tar.gz"
+ocp_installer: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.15/openshift-install-linux.tar.gz"
