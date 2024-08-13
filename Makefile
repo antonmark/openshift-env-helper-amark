@@ -154,7 +154,7 @@ approve_csrs:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) INSTALL_ODF=$(INSTALL_ODF) ./approve_csrs.sh $(WORKER_NUM) $(ODF_NUM)"
 
 reverse_proxy:
-	./scripts/reverse_proxy.sh
+	./scripts/reverse_proxy.sh $(CLUSTER_NAME) $(CLUSTER_DOMAIN)
 
 chrony_config:
 	scp -o "StrictHostKeyChecking=no" ./scripts/chrony_config.sh root@$(HELPER_IP):~/

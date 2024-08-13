@@ -6,6 +6,11 @@ if [ $DEBUG == "true" ]; then
 fi
 
 
+
+CLUSTER_NAME=${1}
+CLUSTER_DOMAIN=${2}
+
+
 curl -LO https://github.com/containous/traefik/releases/download/v2.1.1/traefik_v2.1.1_linux_amd64.tar.gz
 tar zxvf traefik_v2.1.1_linux_amd64.tar.gz
 mv traefik /usr/local/bin
