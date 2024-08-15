@@ -3,6 +3,8 @@ WORKER_NUM = 2
 export INSTALL_ODF = false
 export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
 OCP_VERSION='4.14'
+# Set to true for compact (master only) 3 node cluster
+OCP_COMPACT = false
 
 # If RHN_PROMPT is set to false populate the following varibles appropriately
 RHN_USERNAME = USERNAME
@@ -136,7 +138,7 @@ copy_install_script:
 
 run_install:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "oc completion bash > /etc/bash_completion.d/oc_bash_completion"
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "NETWORK_CIDR=$(NETWORK_CIDR) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install.sh"
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "OCP_COMPACT=$(OCP_COMPACT) NETWORK_CIDR=$(NETWORK_CIDR) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install.sh"
 
 start_vms:
 	./scripts/start_vms.sh $(WORKER_NUM)

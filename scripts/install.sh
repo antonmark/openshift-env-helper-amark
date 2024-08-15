@@ -33,7 +33,10 @@ EOF
 
 openshift-install create manifests
 
-sed -i 's/mastersSchedulable: true/mastersSchedulable: false/g' manifests/cluster-scheduler-02-config.yml
+if [[ "$OCP_COMPACT" == "false" ]]; then
+  sed -i 's/mastersSchedulable: true/mastersSchedulable: false/g' manifests/cluster-scheduler-02-config.yml
+fi
+
 
 openshift-install create ignition-configs
 
