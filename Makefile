@@ -8,7 +8,8 @@ OCP_VERSION='4.14'
 RHN_USERNAME = USERNAME
 RHN_PASSWORD = PASSWORD
 
-ODF_NUM = 3
+# Must be >= 3 or 0.
+ODF_NUM = 3 
 
 YUM_MODULES = ansible git
 MAKE_HOME = $(shell pwd)
@@ -18,9 +19,9 @@ HOME_DIR = $$HOME
 export NETWORK_NAME = openshift4
 
 # This changes the ClusterID. E.g. api.<clusterid>.cluster.lab
-export CLUSTER_NAME = libvirt2
+export CLUSTER_NAME = 
 # This changes the cluster domain used with ClusterID
-export CLUSTER_DOMAIN = ocpcluster.cc
+export CLUSTER_DOMAIN = 
 
 VIRSH_NETNAME = $(NETWORK_NAME)
 export NETWORK_CIDR = 192.168.7
@@ -104,7 +105,7 @@ workers:
 	./scripts/create_workers.sh $(WORKER_NUM)
 
 odfs:
-	./scripts/create_odf.sh
+	./scripts/create_odf.sh $(ODF_NUM)
 
 setup_helper:
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) dnf -y install ansible-core git python3-libsemanage
