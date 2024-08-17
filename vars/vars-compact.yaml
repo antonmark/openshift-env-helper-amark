@@ -1,0 +1,42 @@
+WORK_DIR=$1
+export VER=""
+
+if [ -e "versions/main-$2.yml" ]; then
+  VER=$(cat versions/main-$2.yml)
+fi
+
+cat <<EOF > ${WORK_DIR}/vars.yaml
+---
+$VER
+disk: vda
+helper:
+  name: "helper"
+  ipaddr: "${NETWORK_CIDR}.77"
+dns:
+  domain: "${CLUSTER_DOMAIN}"
+  clusterid: "${CLUSTER_NAME}"
+  forwarder1: "${NETWORK_CIDR}.1"
+  forwarder2: "${NETWORK_CIDR}.1"
+dhcp:
+  router: "${NETWORK_CIDR}.1"
+  bcast: "${NETWORK_CIDR}.255"
+  netmask: "255.255.255.0"
+  poolstart: "${NETWORK_CIDR}.10"
+  poolend: "${NETWORK_CIDR}.30"
+  ipid: "${NETWORK_CIDR}.0"
+  netmaskid: "255.255.255.0"
+bootstrap:
+  name: "bootstrap"
+  ipaddr: "${NETWORK_CIDR}.20"
+  macaddr: "${BOOTSTRAP_MAC}"
+masters:
+  - name: "master0"
+    ipaddr: "${NETWORK_CIDR}.21"
+    macaddr: "${MASTER0_MAC}"
+  - name: "master1"
+    ipaddr: "${NETWORK_CIDR}.22"
+    macaddr: "${MASTER1_MAC}"
+  - name: "master2"
+    ipaddr: "${NETWORK_CIDR}.23"
+    macaddr: "${MASTER2_MAC}"
+EOF

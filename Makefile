@@ -4,7 +4,7 @@ export INSTALL_ODF = false
 export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
 OCP_VERSION='4.14'
 # Set to true for compact (master only) 3 node cluster
-OCP_COMPACT = false
+export OCP_COMPACT = false
 
 # If RHN_PROMPT is set to false populate the following varibles appropriately
 RHN_USERNAME = USERNAME
