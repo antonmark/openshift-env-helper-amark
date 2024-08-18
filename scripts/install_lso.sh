@@ -9,10 +9,17 @@ echo "Create New Project for local storage"
 oc adm new-project openshift-local-storage
 oc annotate project openshift-local-storage openshift.io/node-selector=''
 
-oc get node -o name | grep odf | while read NODE
-do
-  oc label $NODE cluster.ocs.openshift.io/openshift-storage=''
-done
+if [[ $OCP_COMPACT == "true" ]]; then
+  oc get node -o name | grep master | while read NODE
+  do
+    oc label $NODE cluster.ocs.openshift.io/openshift-storage=''
+  done
+else
+  oc get node -o name | grep odf | while read NODE
+  do
+    oc label $NODE cluster.ocs.openshift.io/openshift-storage=''
+  done
+fi
 
 echo "Install Operator"
 OC_VERSION=$(oc version -o yaml | grep openshiftVersion | grep -o '[0-9]*[.][0-9]*' | head -1)
@@ -53,34 +60,61 @@ do
   fi
 done
 
-
-cat <<EOF | oc apply -f -
-apiVersion: "local.storage.openshift.io/v1"
-kind: "LocalVolume"
-metadata:
-  name: "local-disks"
-  namespace: "openshift-local-storage"
-spec:
-  nodeSelector:
-    nodeSelectorTerms:
-    - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - odf0.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
-          - odf1.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
-          - odf2.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
-  storageClassDevices:
-    - storageClassName: "localblock"
-      volumeMode: Block
-      devicePaths:
-        - /dev/vdb
-  tolerations:
-  - effect: NoSchedule
-    key: node.ocs.openshift.io/storage
-    value: "true"
+if [[ $OCP_COMPACT == "true" ]]; then
+  cat <<EOF | oc apply -f -
+  apiVersion: "local.storage.openshift.io/v1"
+  kind: "LocalVolume"
+  metadata:
+    name: "local-disks"
+    namespace: "openshift-local-storage"
+  spec:
+    nodeSelector:
+      nodeSelectorTerms:
+      - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - master0.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+            - master1.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+            - master2.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+    storageClassDevices:
+      - storageClassName: "localblock"
+        volumeMode: Block
+        devicePaths:
+          - /dev/vdb
+    tolerations:
+    - effect: NoSchedule
+      key: node.ocs.openshift.io/storage
+      value: "true"
 EOF
-
+else
+  cat <<EOF | oc apply -f -
+  apiVersion: "local.storage.openshift.io/v1"
+  kind: "LocalVolume"
+  metadata:
+    name: "local-disks"
+    namespace: "openshift-local-storage"
+  spec:
+    nodeSelector:
+      nodeSelectorTerms:
+      - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - odf0.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+            - odf1.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+            - odf2.${CLUSTER_NAME}.${CLUSTER_DOMAIN}
+    storageClassDevices:
+      - storageClassName: "localblock"
+        volumeMode: Block
+        devicePaths:
+          - /dev/vdb
+    tolerations:
+    - effect: NoSchedule
+      key: node.ocs.openshift.io/storage
+      value: "true"
+EOF
+fi
 
 NUM=0
 while [ $NUM -lt 3 ];

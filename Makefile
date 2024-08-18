@@ -173,7 +173,7 @@ wait_install_complete:
 install_lso:
 	scp -o "StrictHostKeyChecking=no" ./scripts/install_lso.sh root@$(HELPER_IP):~/
 	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) chmod +x install_lso.sh
-	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) INSTALL_ODF=$(INSTALL_ODF) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install_lso.sh"
+	ssh -o "StrictHostKeyChecking=no" root@$(HELPER_IP) "DEBUG=$(DEBUG) OCP_COMPACT=$(OCP_COMPACT) INSTALL_ODF=$(INSTALL_ODF) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN) CLUSTER_NAME=$(CLUSTER_NAME) ./install_lso.sh"
 
 install_ocs:
 	scp -o "StrictHostKeyChecking=no" ./scripts/install_odf.sh root@$(HELPER_IP):~/
