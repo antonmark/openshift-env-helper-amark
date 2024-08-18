@@ -3,7 +3,7 @@ WORKER_NUM = 2
 export INSTALL_ODF = false
 export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
 OCP_VERSION='4.14'
-# Set to true for compact (master only) 3 node cluster
+# Set to true for compact (master only) 3 node cluster /w storage for ODF
 export OCP_COMPACT = false
 
 # If RHN_PROMPT is set to false populate the following varibles appropriately
@@ -99,6 +99,9 @@ helper_start:
 
 masters:
 	./scripts/create_masters.sh
+
+masters_compact:
+	./scripts/create_masters_compact.sh
 
 bootstrap:
 	./scripts/create_bootstrap.sh
