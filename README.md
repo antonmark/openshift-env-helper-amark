@@ -71,3 +71,7 @@ If you do not need the envirnoment anymore, you can delete all the staff executi
 # make flclean
 ```
 
+## To-do list
+
+- Fix start_vms.sh logic
+- 
