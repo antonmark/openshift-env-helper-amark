@@ -69,8 +69,10 @@ helper_deploy:
 	sed -i -e "s/192.168.7.77/$(HELPER_IP)/g" $(WORK_DIR)/helper-ks.cfg
 	sed -i -e "s/192.168.7.1/$(NETWORK_CIDR).1/g" $(WORK_DIR)/helper-ks.cfg
 
-	# Add ssh key to helper-ks.cfg
-	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
+	# Inject SSH key and allow root login (RHEL defaults to PermitRootLogin prohibit-password,
+	# which breaks wait_until_helper_running.sh password-based ssh-copy-id).
+	sed -i -e "/^rootpw /a sshkey --username=root $(SSH_PUB_KEY)" $(WORK_DIR)/helper-ks.cfg
+	./scripts/enable_helper_root_ssh.sh $(WORK_DIR)/helper-ks.cfg
 
 	virt-install --name=$(HELPER_NODE) --vcpus=2 --ram=8192 \
 	--disk path=/home/$(HELPER_NODE).qcow2,bus=virtio,size=50 \
