@@ -19,6 +19,8 @@ if [ -z "${RHN_USERNAME}" ] || [ -z "${RHN_PASSWORD}" ]; then
 fi
 
 # Run subscription-manager over SSH so the password never touches a local file.
+# Under Simple Content Access (SCA), auto-attach is a no-op; AppStream (ansible-core)
+# is available after register without enabling the old ansible-2.9 repo.
 ssh -o "StrictHostKeyChecking=no" root@"${HELPER_IP}" \
-  "subscription-manager register --auto-attach --username='${RHN_USERNAME}' --password='${RHN_PASSWORD}' && \
-   subscription-manager repos --enable ansible-2.9-for-rhel-8-x86_64-rpms"
+  "subscription-manager register --auto-attach --username='${RHN_USERNAME}' --password='${RHN_PASSWORD}' || \
+   subscription-manager identity >/dev/null"
