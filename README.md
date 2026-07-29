@@ -45,9 +45,17 @@ You also need to prepare some files and configs as below:
 ## Quick Start
 
 To deploy OpenShift Cluster, execute the following command.
-All the following commands need to specify RHSM_USERNAME and RHSM_PASSWORD parameters for registering subscription on helper node.
 
 ```[shell]
+# make all
+```
+
+RHSM registration runs automatically after the helper node boots (`make helper_register`). By default you will be prompted interactively for your Red Hat username and password — the credentials are passed directly over SSH and are never written to a file on the host or on the VM.
+
+For non-interactive use (e.g. CI), export credentials before running make:
+
+```[shell]
+# export RHN_PROMPT=false RHN_USERNAME=myuser RHN_PASSWORD=mypass
 # make all
 ```
 

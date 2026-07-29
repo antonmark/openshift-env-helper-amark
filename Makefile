@@ -1,14 +1,10 @@
 export DEBUG = false
 WORKER_NUM = 2
 export INSTALL_ODF = false
-export RHN_PROMPT = true # Change to false if you wish to hardcode your RHN credentials below
+export RHN_PROMPT = true # Set to false to use RHN_USERNAME/RHN_PASSWORD from the environment instead of prompting
 OCP_VERSION='4.14'
 # Set to true for compact (master only) 3 node cluster /w storage for ODF
 export OCP_COMPACT = false
-
-# If RHN_PROMPT is set to false populate the following varibles appropriately
-RHN_USERNAME = USERNAME
-RHN_PASSWORD = PASSWORD
 
 # Must be >= 3 or 0.
 ODF_NUM = 3 
@@ -41,7 +37,7 @@ LIBVIRT_ISO_DIR = /var/lib/libvirt/ISO/
 
 all: deploy_ocp install_lso install_ocs
 deploy_ocp: prepare network helper ocp
-helper: helper_deploy helper_wait helper_start
+helper: helper_deploy helper_wait helper_start helper_register
 ocp: ocp_prepare ocp_install
 ocp_prepare: masters masters_compact bootstrap workers odfs setup_helper generate_vars copy_vars run_playbook copy_pullsecret copy_install_script
 ocp_install: run_install start_vms wait_bootstrap_complete stop_bootstrap approve_csrs wait_install_complete approve_csrs reverse_proxy chrony_config
@@ -73,8 +69,6 @@ helper_deploy:
 	sed -i -e "s/192.168.7.77/$(HELPER_IP)/g" $(WORK_DIR)/helper-ks.cfg
 	sed -i -e "s/192.168.7.1/$(NETWORK_CIDR).1/g" $(WORK_DIR)/helper-ks.cfg
 
-	./scripts/add-rhsm-to-ks.sh $(WORK_DIR) $(RHN_USERNAME) $(RHN_PASSWORD)
-
 	# Add ssh key to helper-ks.cfg
 	#ansible localhost -m lineinfile -a "path=$(WORK_DIR)/helper-ks.cfg insertafter='rootpw --plaintext changeme' line='sshkey --username=root $(SSH_PUB_KEY)'"
 
@@ -95,6 +89,11 @@ helper_start:
 	virsh start $(HELPER_NODE)
 	# Wait for succeeding connect with ssh
 	./scripts/wait_until_helper_running.sh $(HELPER_IP) $(SSH_PUB_BASTION)
+
+helper_register:
+	# Register helper node with RHSM after boot; credentials are never written to disk.
+	# Set RHN_PROMPT=false and export RHN_USERNAME/RHN_PASSWORD for non-interactive use.
+	./scripts/register_helper_rhsm.sh $(HELPER_IP)
 
 
 masters:
