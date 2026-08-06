@@ -3,3 +3,4 @@ pull-secret
 *.log
 install.log
 .vscode/
+.env

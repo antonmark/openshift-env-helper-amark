@@ -35,6 +35,12 @@ SSH_PUB_BASTION = $(HOME_DIR)/.ssh/id_rsa.pub
 
 LIBVIRT_ISO_DIR = /var/lib/libvirt/ISO/
 
+# Host-specific overrides (copy env.example → .env). See env.example for ocs1–4.
+# Included after defaults so .env wins. Re-export so child scripts see updates.
+-include .env
+export CLUSTER_NAME CLUSTER_DOMAIN NETWORK_NAME NETWORK_CIDR INSTALL_ODF
+export DEBUG RHN_PROMPT OCP_COMPACT
+
 all: deploy_ocp install_lso install_ocs
 deploy_ocp: prepare network helper ocp
 helper: helper_deploy helper_wait helper_start helper_register

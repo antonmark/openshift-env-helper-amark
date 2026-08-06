@@ -1,5 +1,9 @@
 # Cheat Sheet
 
+## Per-host setup (ocs1–4)
+
+Copy [`env.example`](env.example) to `.env` on the hypervisor and set `CLUSTER_NAME` / `CLUSTER_DOMAIN` for that box (`libvirt1`…`libvirt4` + `ocpcluster.cc`). `.env` is gitignored; Make loads it automatically.
+
 ## Build
 
 ```sh
