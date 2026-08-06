@@ -1,20 +1,24 @@
 #!/bin/bash
+set -euo pipefail
 
-if [ "$INSTALL_ODF" == "false" ]; then
-  echo "No need to install Container Sotrage Operator."
+if [ "${INSTALL_ODF:-false}" == "false" ]; then
+  echo "No need to install Container Storage Operator."
   exit 0
 fi
 
+if [ "${DEBUG:-false}" == "true" ]; then
+  set -x
+fi
+
 echo "Create New Project for container storage"
-oc adm new-project openshift-storage
-oc annotate project openshift-storage openshift.io/node-selector=''
-oc label namespace openshift-storage openshift.io/cluster-monitoring=true
+oc adm new-project openshift-storage || true
+oc annotate project openshift-storage openshift.io/node-selector='' --overwrite
+oc label namespace openshift-storage openshift.io/cluster-monitoring=true --overwrite
 
 echo "Install Operator"
 CHANNEL_VERSION=$(oc get packagemanifests -n openshift-marketplace odf-operator -o jsonpath='{.status.defaultChannel}')
 
-
-cat <<EOF | oc apply -f -
+oc apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha2
 kind: OperatorGroup
 metadata:
@@ -37,27 +41,29 @@ spec:
   sourceNamespace: openshift-marketplace
 EOF
 
-echo "Wait for install succeeded."
-RTN=1
-while [ $RTN -ne 0 ];
-do
-  oc get csvs -n openshift-storage | grep Succeeded > /dev/null
-  RTN=$?
-  if [ $RTN -ne 0 ]; then
-    echo -n "."
-    sleep 5
-  fi
+echo "Wait for ocs-operator CSV to succeed (required for StorageCluster)."
+until oc get csv -n openshift-storage -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.phase}{"\n"}{end}' \
+  | grep -E '^ocs-operator\.' | grep -q 'Succeeded$'; do
+  echo -n "."
+  sleep 5
+done
+echo
+
+echo "Wait for StorageCluster CRD to be established."
+until oc get crd storageclusters.ocs.openshift.io >/dev/null 2>&1 \
+  && [ "$(oc get crd storageclusters.ocs.openshift.io -o jsonpath='{.status.conditions[?(@.type=="Established")].status}')" = "True" ]; do
+  echo -n "."
+  sleep 5
+done
+echo
+
+# Add storage taint on ODF nodes (idempotent)
+oc get node --no-headers | awk '{print $1}' | grep odf | while read -r NODE; do
+  oc adm taint nodes "$NODE" node.ocs.openshift.io/storage=true:NoSchedule --overwrite
 done
 
-## Add taint
-oc get node | awk '{print $1}' | grep odf | while read NODE
-do
-  oc adm taint nodes $NODE node.ocs.openshift.io/storage=true:NoSchedule
-done
-
-## Deploy ODF cluster
-cat <<EOF | oc apply -f -
----
+echo "Deploy ODF StorageCluster"
+if ! oc apply -f - <<EOF
 apiVersion: ocs.openshift.io/v1
 kind: StorageCluster
 metadata:
@@ -97,18 +103,24 @@ spec:
           cpu: 1
           memory: 5Gi
 EOF
+then
+  echo "ERROR: failed to apply StorageCluster ocs-storagecluster" >&2
+  exit 1
+fi
 
-echo "Wait for deploying succeeded."
-RTN=1
-while [ $RTN -ne 0 ];
-do
-  oc get storagecluster -n openshift-storage | grep Ready > /dev/null
-  RTN=$?
-  if [ $RTN -ne 0 ]; then
-    echo -n "."
-    sleep 5
-  fi
+if ! oc get storagecluster ocs-storagecluster -n openshift-storage >/dev/null 2>&1; then
+  echo "ERROR: StorageCluster ocs-storagecluster was not created" >&2
+  exit 1
+fi
+echo "StorageCluster created; waiting for Ready phase."
+
+until [ "$(oc get storagecluster ocs-storagecluster -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || true)" = "Ready" ]; do
+  PHASE=$(oc get storagecluster ocs-storagecluster -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+  echo -n ".${PHASE}."
+  sleep 10
 done
+echo
+echo "StorageCluster is Ready."
 
 echo "Enable storage console"
-oc patch console.operator cluster -n openshift-storage --type json -p '[{"op": "add", "path": "/spec/plugins", "value": ["odf-console"]}]'
+oc patch console.operator cluster --type json -p '[{"op": "add", "path": "/spec/plugins", "value": ["odf-console"]}]' || true
