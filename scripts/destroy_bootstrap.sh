@@ -1,6 +1,5 @@
 #!/bin/bash
 
-BOOTSTRAP_DOMAIN=ocp4-bootstrap
-virsh destroy ${BOOTSTRAP_DOMAIN}
-virsh undefine ${BOOTSTRAP_DOMAIN} --remove-all-storage
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+"$SCRIPT_DIR/libvirt_undefine_domain.sh" ocp4-bootstrap

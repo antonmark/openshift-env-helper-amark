@@ -202,11 +202,10 @@ clean:
 	ssh-keygen -R $(NETWORK_CIDR).77
 
 helper_clean:
-	-virsh destroy $(HELPER_NODE)
-	-virsh undefine $(HELPER_NODE) --remove-all-storage
+	-./scripts/libvirt_undefine_domain.sh $(HELPER_NODE)
 
 odf_clean:
-	-./scripts/destroy_odf.sh
+	-./scripts/destroy_odf.sh $(ODF_NUM)
 
 worker_clean:
 	-./scripts/destroy_workers.sh $(WORKER_NUM)
@@ -218,9 +217,12 @@ bootstrap_clean:
 	-./scripts/destroy_bootstrap.sh
 
 network_clean:
-	./scripts/remove_network.sh $(WORK_DIR)/virt-net.xml
+	./scripts/remove_network.sh $(NETWORK_NAME) $(WORK_DIR)/virt-net.xml
 
 additional_network_clean:
 	./scripts/remove_additional_network.sh
 
-flclean: odf_clean worker_clean master_clean bootstrap_clean helper_clean additional_network_clean network_clean clean
+leftover_clean:
+	-./scripts/destroy_leftover_domains.sh
+
+flclean: odf_clean worker_clean master_clean bootstrap_clean helper_clean leftover_clean additional_network_clean network_clean clean

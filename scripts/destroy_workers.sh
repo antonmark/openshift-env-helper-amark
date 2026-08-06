@@ -1,10 +1,10 @@
 #!/bin/bash
 
-WORKER_NUM=$(expr ${1} - 1)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-for i in $(seq 0 ${WORKER_NUM})
-do
-  WORKER_DOMAIN=ocp4-worker${i}
-  virsh destroy ${WORKER_DOMAIN}
-  virsh undefine ${WORKER_DOMAIN} --remove-all-storage
+WORKER_NUM=${1:-2}
+LAST=$(( WORKER_NUM - 1 ))
+
+for i in $(seq 0 "$LAST"); do
+  "$SCRIPT_DIR/libvirt_undefine_domain.sh" "ocp4-worker${i}"
 done

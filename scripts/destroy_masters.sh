@@ -1,8 +1,7 @@
 #!/bin/bash
 
-for i in $(seq 0 2)
-do
-  MASTER_DOMAIN=ocp4-master${i}
-  virsh destroy ${MASTER_DOMAIN}
-  virsh undefine ${MASTER_DOMAIN} --remove-all-storage
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+for i in $(seq 0 2); do
+  "$SCRIPT_DIR/libvirt_undefine_domain.sh" "ocp4-master${i}"
 done
