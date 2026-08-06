@@ -44,6 +44,8 @@ You also need to prepare some files and configs as below:
 
 ## Quick Start
 
+See [CHEATSHEET.md](CHEATSHEET.md) for common make targets and variables.
+
 To deploy OpenShift Cluster, execute the following command.
 
 ```[shell]
