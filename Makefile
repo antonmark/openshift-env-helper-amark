@@ -71,7 +71,8 @@ helper_deploy:
 
 	# Inject SSH key and allow root login (RHEL defaults to PermitRootLogin prohibit-password,
 	# which breaks wait_until_helper_running.sh password-based ssh-copy-id).
-	sed -i -e "/^rootpw /a sshkey --username=root $(SSH_PUB_KEY)" $(WORK_DIR)/helper-ks.cfg
+	# Quote the key so the trailing comment is not parsed as a second sshkey argument.
+	sed -i -e '/^rootpw /a sshkey --username=root "$(SSH_PUB_KEY)"' $(WORK_DIR)/helper-ks.cfg
 	./scripts/enable_helper_root_ssh.sh $(WORK_DIR)/helper-ks.cfg
 
 	virt-install --name=$(HELPER_NODE) --vcpus=2 --ram=8192 \
